@@ -1,12 +1,26 @@
 # 大肥鱼办公室 · dsh-fish-office
 
-在 DeepSeek Harness 右侧打开一间像素鲸鱼娘办公室，显示真实任务与多智能体的工作状态。
+本插件支持在 DeepSeek Harness 右侧打开一间像素风格的鲸鱼娘办公室，显示真实任务与多智能体的工作状态。
 
-![大肥鱼办公室](assets/preview.png)
+<table>
+  <tr>
+    <th align="center">白天</th>
+    <th align="center">黄昏</th>
+    <th align="center">夜晚</th>
+  </tr>
+  <tr>
+    <td width="33%" valign="top"><img src="assets/白天.png" alt="大肥鱼办公室 · 白天" width="100%"></td>
+    <td width="33%" valign="top"><img src="assets/黄昏.png" alt="大肥鱼办公室 · 黄昏" width="100%"></td>
+    <td width="33%" valign="top"><img src="assets/夜晚.png" alt="大肥鱼办公室 · 夜晚" width="100%"></td>
+  </tr>
+</table>
 
-- 一名主管、六名员工，工作时开启工位屏幕，空闲时自由活动。
-- 任务气泡、技能书架、咖啡、喂鱼、休息与庭院互动。
-- 四时光照、现实时间与动态环境，切换聊天保留办公室。
+## 员工图鉴
+
+![大肥鱼办公室员工海报：鲸理、小D、小E、小P、小S、小K与小C的形象和中文简历](assets/员工海报.png)
+
+## DeepSeek Harness 插件效果
+![插件效果](assets/DSH显示.png)
 
 ## 从 GitHub 安装
 
@@ -24,7 +38,7 @@ npx @deepseek-ai/dsh@0.2.1-rc.2 plugin --profile web add github:Hjy0714/dsh-fish
 
 ## 自定义
 
-修改 `~/.dsh/fish-office-config/` 中的 `员工档案.json` 和 `对白库.json`，可更改姓名、介绍与对白，保存后自动生效。设置 DSH_HOME 时，配置位于该目录下的 fish-office-config。
+修改 `~/.dsh/fish-office-config/` 中的 `员工档案.json` 和 `对白库.json`，可自定义姓名、介绍与对白，保存后自动生效。设置 DSH_HOME 时，配置位于该目录下的 fish-office-config。
 
 仓库内的默认配置只保留在 `config/`，源码与安装包共用。
 
