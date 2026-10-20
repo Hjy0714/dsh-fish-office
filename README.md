@@ -40,18 +40,6 @@ npx @deepseek-ai/dsh@0.2.1-rc.2 plugin --profile web add github:Hjy0714/dsh-fish
 
 修改 `~/.dsh/fish-office-config/` 中的 `员工档案.json` 和 `对白库.json`，可自定义姓名、介绍与对白，保存后自动生效。设置 DSH_HOME 时，配置位于该目录下的 fish-office-config。
 
-仓库内的默认配置只保留在 `config/`，源码与安装包共用。
-
-## 开发
-
-```sh
-npm ci --ignore-scripts
-npm run build
-npm test
-```
-
-源码修改后，同步提交 lib/ 中的构建产物。
-
 ## 许可证
 
 [MIT](LICENSE)，代码与随包美术均可使用。
