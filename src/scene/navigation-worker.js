@@ -1,0 +1,1 @@
+self.postMessage({ready:true});self.onmessage=e=>{const m=e.data,t=performance.now();try{const route=OfficeWorld.path(m.start,m.end,m.avoid);self.postMessage({owner:m.owner,id:m.id,route,ms:performance.now()-t});}catch(error){self.postMessage({owner:m.owner,id:m.id,route:null,ms:performance.now()-t,error:'path failed'});}};

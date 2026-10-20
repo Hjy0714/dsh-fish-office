@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.gz -text
+*.png -text
+*.webp -text
+*.part-* -text

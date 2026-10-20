@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>大肥鱼办公室</title>
+ <link rel="stylesheet" href="scene.css">
+</head>
+<body>
+<main>
+<section class="stage-panel">
+<div class="stage-top">
+<div>
+<button id="zoom-out" aria-label="缩小场景">−</button>
+<output id="zoom-value">100%</output>
+<button id="zoom-in" aria-label="放大场景">＋</button>
+</div>
+</div>
+<div class="viewport" id="viewport">
+<div class="canvas-wrap" id="canvas-wrap">
+<canvas id="scene" width="941" height="1672" tabindex="0" aria-label="大肥鱼办公室像素场景，点击角色查看员工介绍">
+</canvas>
+</div>
+</div>
+</section>
+<aside>
+<section>
+<div class="heading">
+<h2>鲸鱼工作牌</h2>
+<small>TEAM / 07</small>
+</div>
+<div id="roster">
+</div>
+</section>
+<section>
+<div class="heading">
+<h2>办公室控制台</h2>
+<small>ATMOSPHERE</small>
+</div>
+<div class="segmented" id="day-modes">
+<button data-phase="dawn">清晨</button>
+<button data-phase="day">白天</button>
+<button data-phase="dusk" class="active">黄昏</button>
+<button data-phase="night">黑夜</button>
+</div>
+<label class="slider">环境光 <input id="ambient" type="range" min="0" max="100" value="78">
+<output id="ambient-value">78%</output>
+</label>
+<label class="slider">灯光亮度 <input id="glow" type="range" min="0" max="100" value="68">
+<output id="glow-value">68%</output>
+</label>
+<div class="control-row">
+<button id="lamps">台灯 · 开</button>
+</div>
+<div class="control-row">
+<button id="cycle" class="active" title="环境随当前时间变化">锁定现实时间 · 开</button>
+</div>
+</section>
+</aside>
+</main>
+<div class="toast" id="toast" role="status">
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{
+  "name": "dsh-fish-office",
+  "version": "0.6.2",
+  "description": "A lively pixel-art fish-girl office for DeepSeek Harness: real task visualization, multi-agent activity and a living garden.",
+  "type": "module",
+  "main": "./src/host.mjs",
+  "exports": {
+    ".": "./src/host.mjs",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "src/host.mjs",
+    "src/project.mjs",
+    "src/projection.mjs",
+    "src/office-config.mjs",
+    "src/scene-resource.mjs",
+    "lib/client.js",
+    "lib/scene-data.json.gz",
+    "assets/scene-assets.json.gz",
+    "config",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check-package.mjs"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.1-rc.2 <0.2.2-0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/schemastery": "^3.18.5"
+  },
+  "devDependencies": {
+    "@deepseek-ai/schemastery": "^3.18.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hjy0714/dsh-fish-office.git"
+  },
+  "homepage": "https://github.com/Hjy0714/dsh-fish-office#readme",
+  "bugs": {
+    "url": "https://github.com/Hjy0714/dsh-fish-office/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "dsh",
+    "deepseek-harness",
+    "multi-agent",
+    "pixel-art",
+    "office",
+    "whale",
+    "fish",
+    "visualization"
+  ],
+  "author": "Hjy0714",
+  "license": "MIT",
+  "icon": "./icon.svg"
+}
