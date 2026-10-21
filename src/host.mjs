@@ -3,11 +3,11 @@ import {activityProjection} from './projection.mjs';
 import {sceneResources} from './scene-resource.mjs';
 import {createReader,createGlobalReader,validId} from './project.mjs';
 export const name='fish-office';
-export const Config=Schema.object({directory:Schema.string().description('Office configuration directory. Defaults to $DSH_HOME/fish-office-config.'),pollIntervalMs:Schema.number().min(1000).max(10000).default(1500).description('UI refresh interval in milliseconds.')});
+export const Config=Schema.object({pollIntervalMs:Schema.number().min(1000).max(10000).default(1500).description('UI refresh interval in milliseconds.')});
 export const inject=['connection','sessions','agents','sessionPersistence','sessionProjections'];
 import {createOfficeConfig} from './office-config.mjs';
 export function apply(ctx,config={}) {
-  const officeConfig=createOfficeConfig(config.directory);
+  const officeConfig=createOfficeConfig();
   ctx.effect(()=>ctx.sessionProjections.register(activityProjection),'fish office activity projection');
   const running=new Map();
   for(const session of ctx.sessions.list()){
@@ -34,7 +34,7 @@ export function apply(ctx,config={}) {
           return reply({ok:true,...packed,pollIntervalMs:config.pollIntervalMs||1500});
         }
         if(payload?.op==='office-config')return reply({ok:true,officeConfig:officeConfig.read()});
-        if(payload?.op==='save-profile'){try{return reply({ok:true,officeConfig:officeConfig.saveProfile(payload.profile)});}catch(e){return reply({ok:false,error:e.message});}}
+        if(payload?.op==='save-profile')return reply({ok:false,error:'请直接修改插件 config/员工档案.json。'});
         if(payload?.op==='global-snapshot')return reply({...await globalSnapshot(payload.sessionId),officeConfig:officeConfig.read()});
         if(payload?.op!=='snapshot'||!validId(payload.sessionId))return reply({ok:false,error:'请选择一个 DSH 会话'});
         return reply(await snapshot(payload.sessionId));

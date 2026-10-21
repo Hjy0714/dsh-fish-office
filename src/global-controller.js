@@ -87,7 +87,9 @@ function createOfficeController(api,hooks={},random=()=>Math.random()){
   for(const a of actors.slice(1)){const r=records.get(a.liveSession);if(r)bind(a,r);}
   const waiting=[...records.values()].filter(r=>!r.actor&&(active(r.row)||r.skills.length)).sort((a,b)=>a.order-b.order);
   for(const r of waiting){
-   const a=actors.slice(1).find(a=>!a.liveSession)||actors.slice(1).find(a=>{const old=records.get(a.liveSession);return old&&!active(old.row)&&api.elapsed-old.lastActive>4;});
+   const workers=actors.slice(1),unassigned=workers.filter(a=>!a.liveSession);
+   const available=unassigned.length?unassigned:workers.filter(a=>{const old=records.get(a.liveSession);return old&&!active(old.row)&&api.elapsed-old.lastActive>4;});
+   const a=available[Math.floor(random()*available.length)];
    if(!a)break;const old=records.get(a.liveSession);if(old){old.actor=null;old.stage=null;old.skills=[];}if(a.queue){const t=a.queue.target;if(t.id!==a.spot?.id&&t.id!==a.goal?.target.id&&t.id!==a.trip?.target.id&&api.occupancy.get(t.id)===a.index)api.occupancy.delete(t.id);a.queue=null;}a.pending=null;bind(a,r);note(a,'assignment',r.row.task?.topic||'本次任务');
   }
   overflow=[...records.values()].filter(r=>!r.actor&&active(r.row)).length;

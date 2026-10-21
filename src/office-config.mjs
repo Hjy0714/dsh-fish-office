@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import os from 'node:os';
-import {createHash,randomUUID} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 
 const defaults=Object.fromEntries(['对白库.json','员工档案.json'].map(n=>[n,JSON.parse(fs.readFileSync(new URL('../config/'+n,import.meta.url),'utf8'))]));
 const ids=new Set(['chief',...Array.from({length:6},(_,i)=>'crew-'+i)]);
@@ -26,11 +26,9 @@ export function validateDialogue(value,reference=defaults['对白库.json'],pref
  }
  return value;
 }
-export function createOfficeConfig(directory){
- const folder=typeof directory==='string'&&directory.trim()?path.resolve(directory):path.join(process.env.DSH_HOME||path.join(os.homedir(),'.dsh'),'fish-office-config');
- fs.mkdirSync(folder,{recursive:true});
- const cache=new Map();
- for(const [file,value]of Object.entries(defaults)){try{fs.writeFileSync(path.join(folder,file),JSON.stringify(value,null,2)+'\n',{encoding:'utf8',flag:'wx'});}catch(e){if(e.code!=='EEXIST')throw e;}cache.set(file,{value,signature:null,error:null});}
+export function createOfficeConfig(){
+ const folder=fileURLToPath(new URL('../config/',import.meta.url));
+ const cache=new Map(Object.entries(defaults).map(([file,value])=>[file,{value,signature:null,error:null}]));
  function readFile(file,validate){
   const entry=cache.get(file);
   try{const body=fs.readFileSync(path.join(folder,file),'utf8'),signature=createHash('sha256').update(body).digest('hex');if(signature!==entry.signature){const value=validate(JSON.parse(body.replace(/^\uFEFF/,'')));entry.value=value;entry.signature=signature;}entry.error=null;}
@@ -38,12 +36,5 @@ export function createOfficeConfig(directory){
   return entry.value;
  }
  function read(){const dialogue=readFile('对白库.json',validateDialogue),profiles=readFile('员工档案.json',validateProfiles);return {dialogue,profiles,revision:createHash('sha256').update(JSON.stringify([dialogue,profiles])).digest('hex').slice(0,20),warning:[...cache.values()].map(v=>v.error).filter(Boolean).join('；')};}
- function saveProfile(input){
-  const profile=validateProfile(input),current=read();
-  if(cache.get('员工档案.json').error)throw Error('员工档案.json 存在格式错误，请先修复文件，避免覆盖手动修改。');
-  const next={...current.profiles,员工:current.profiles.员工.map(p=>p.id===profile.id?profile:p)},file=path.join(folder,'员工档案.json'),temporary=file+'.'+randomUUID()+'.tmp';
-  try{fs.writeFileSync(temporary,JSON.stringify(next,null,2)+'\n','utf8');fs.renameSync(temporary,file);}finally{if(fs.existsSync(temporary))fs.unlinkSync(temporary);}
-  return read();
- }
- return {read,saveProfile,directory:folder};
+ return {read,directory:folder};
 }

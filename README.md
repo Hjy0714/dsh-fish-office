@@ -34,11 +34,11 @@ Web 版：
 npx @deepseek-ai/dsh@0.2.1-rc.2 plugin --profile web add github:Hjy0714/dsh-fish-office
 ```
 
-安装后重启 DSH，点击“🐋 大肥鱼办公室”。仓库自带构建产物，无需 npm 发布或手动构建。
+安装后重启 DSH，点击“🐋 大肥鱼办公室”。
 
 ## 自定义
 
-修改 `~/.dsh/fish-office-config/` 中的 `员工档案.json` 和 `对白库.json`，可自定义姓名、介绍与对白，保存后自动生效。设置 DSH_HOME 时，配置位于该目录下的 fish-office-config。
+员工姓名、介绍和对白统一在插件自身 `config/` 下的 `员工档案.json` 与 `对白库.json` 中修改，保存后自动生效。
 
 ## 许可证
 

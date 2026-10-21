@@ -1,20 +1,29 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import vm from 'node:vm';
 import {createOfficeConfig,validateProfiles} from '../src/office-config.mjs';
-const folder=()=>fs.mkdtempSync(path.join(os.tmpdir(),'whale-config-'));
-test('manual edits reload, UI saves persist, invalid edits preserve the last good configuration',()=>{
- const dir=folder(),service=createOfficeConfig(dir),initial=service.read(),file=path.join(dir,'对白库.json');
+async function fixture(){
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'fish-config-')),dir=path.join(root,'config');
+ fs.mkdirSync(path.join(root,'src'));fs.mkdirSync(dir);
+ fs.copyFileSync(new URL('../src/office-config.mjs',import.meta.url),path.join(root,'src','office-config.mjs'));
+ for(const name of ['员工档案.json','对白库.json'])fs.copyFileSync(new URL('../config/'+name,import.meta.url),path.join(dir,name));
+ const {createOfficeConfig}=await import((await import('node:url')).pathToFileURL(path.join(root,'src','office-config.mjs')));
+ return {root,dir,service:createOfficeConfig('/ignored/external/path')};
+}
+test('only package config is read, JSON edits reload, and invalid edits retain last valid values',async()=>{
+ const {root,dir,service}=await fixture();
+ try{
+ const initial=service.read(),file=path.join(dir,'对白库.json');assert.equal(path.resolve(service.directory),dir);assert.equal(service.saveProfile,undefined);
  const changed=structuredClone(initial.dialogue);changed.日常.空闲问候=['你好，喝咖啡吗？'];fs.writeFileSync(file,JSON.stringify(changed));assert.deepEqual(service.read().dialogue.日常.空闲问候,changed.日常.空闲问候);
  fs.writeFileSync(file,'{bad json');const invalid=service.read();assert.match(invalid.warning,/对白库/);assert.deepEqual(invalid.dialogue,changed);
  fs.writeFileSync(file,JSON.stringify(changed));assert.equal(service.read().warning,'');
- const custom={...initial.profiles.员工[1],姓名:'小蓝鲸',岗位:'研发与测试',介绍:'喜欢把问题逐个解决。'};service.saveProfile(custom);assert.deepEqual(createOfficeConfig(dir).read().profiles.员工[1],custom);assert.equal(service.read().profiles.员工.length,7);
- assert.throws(()=>service.saveProfile({...custom,id:'../../evil'}),/无效员工编号/);assert.throws(()=>service.saveProfile({...custom,姓名:'a'.repeat(17)}),/姓名/);
- const profileFile=path.join(dir,'员工档案.json');fs.writeFileSync(profileFile,'bad');assert.throws(()=>service.saveProfile(custom),/格式错误/);assert.equal(fs.readFileSync(profileFile,'utf8'),'bad');
- fs.rmSync(dir,{recursive:true});
+ const profiles=structuredClone(initial.profiles);profiles.员工[1].姓名='小蓝鲸';profiles.员工[1].岗位='研发与测试';fs.writeFileSync(path.join(dir,'员工档案.json'),JSON.stringify(profiles));assert.deepEqual(service.read().profiles,profiles);
+ }finally{fs.rmSync(root,{recursive:true});}
 });
-test('structural validation rejects duplicate IDs and empty dialogue lists without overwriting files',()=>{
- const dir=folder(),service=createOfficeConfig(dir),first=service.read(),bad=structuredClone(first.profiles);bad.员工[1].id='chief';assert.throws(()=>validateProfiles(bad),/重复/);
+test('structural validation rejects duplicate IDs and empty dialogue lists without overwriting JSON',async()=>{
+ const {root,dir,service}=await fixture();
+ try{
+ const first=service.read(),bad=structuredClone(first.profiles);bad.员工[1].id='chief';assert.throws(()=>validateProfiles(bad),/重复/);
  const d=structuredClone(first.dialogue);d.日常.空闲问候=[];fs.writeFileSync(path.join(dir,'对白库.json'),JSON.stringify(d));assert.match(service.read().warning,/空闲问候/);assert.deepEqual(service.read().dialogue,first.dialogue);
- fs.rmSync(dir,{recursive:true});
+ }finally{fs.rmSync(root,{recursive:true});}
 });
 test('dialogue templates use renamed actors and live topics, and manager branches remain functional',()=>{
  const defaults=JSON.parse(fs.readFileSync(new URL('../config/对白库.json',import.meta.url),'utf8')),actors=[{id:'chief',name:'大鲸主管',chief:true,index:0},...Array.from({length:6},(_,i)=>({id:'crew-'+i,index:i+1,name:i?'同事'+i:'蓝鲸同学',liveSession:i?null:'session-a',liveState:i?'idle':'working',action:i?'idle':'work',phase:'loop'}))];

@@ -15,7 +15,8 @@ const lightCanvas=document.createElement('canvas');lightCanvas.width=W;lightCanv
 const environments=Object.fromEntries(await Promise.all(Object.entries(A.environments).map(async([key,src])=>[key,await load(src)])));
 const environmentsOff=Object.fromEntries(await Promise.all(Object.entries(A.environmentsOff).map(async([key,src])=>[key,await load(src)])));
 const officeClockWalls=Object.fromEntries(await Promise.all(Object.entries(window.OfficeClockAssets).map(async([key,src])=>[key,await load(src)])));
-for(const [key,patch]of Object.entries(officeClockWalls))for(const plates of [environments,environmentsOff]){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(plates[key],0,0);g.drawImage(patch,75,25);plates[key]=c;}
+/* @include src/clock-lighting.js */
+for(const [key,patch]of Object.entries(officeClockWalls))for(const [lit,plates]of [[true,environments],[false,environmentsOff]]){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(plates[key],0,0);g.drawImage(clockWallPlate(patch,key,lit),75,25);plates[key]=c;}
 const aquariumClean=await load(A.aquarium.clean),aquariumWhale=await load(A.aquarium.whale);
 const phaseProfiles={
  dawn:{ambient:'#b7c8ef',tint:.10,sun:{x:-1,y:.65},shadow:.18,length:27,warm:.13,sky:'#d5acbc'},
@@ -242,11 +243,12 @@ function sync(){
 }
 /* @include src/wall-clock.js */
 function setPhase(value){if(!environments[value])return;const before=environmentWeights();settings.realTimeLock=false;environmentMix={fromWeights:before,to:value,start:elapsed,startWall:performance.now(),duration:2.4};settings.phase=value;nextEnvironmentPhase=elapsed+90;settings.ambient={dawn:86,day:96,dusk:78,night:26}[value];sync()}
-function zoom(value){settings.zoom=clamp(value,1,2.5);const fit=innerWidth<=620?$('#viewport').clientWidth:Math.min($('#viewport').clientWidth,Math.max(280,(innerHeight-205)*W/H));$('#canvas-wrap').style.width=Math.round(fit*settings.zoom)+'px';$('#zoom-value').textContent=Math.round(settings.zoom*100)+'%'}
+/* @include src/zoom.js */
+
 document.querySelectorAll('[data-phase]').forEach(b=>b.onclick=()=>setPhase(b.dataset.phase));
 for(const key of ['ambient','glow'])$('#'+key).oninput=e=>{settings[key]=Number(e.target.value);sync()};
 $('#lamps').onclick=toggleLamps;$('#cycle').onclick=toggleReality;
-$('#zoom-in').onclick=()=>zoom(settings.zoom+.25);$('#zoom-out').onclick=()=>zoom(settings.zoom-.25);
+
 addEventListener('resize',()=>zoom(settings.zoom));document.addEventListener('visibilitychange',()=>{last=0;accumulator=0});
 function frame(now){const dt=last?Math.min(.1,(now-last)/1000):0;last=now;try{if(!document.hidden&&!settings.paused){accumulator+=dt;while(accumulator>=1/60){tick(1/60);accumulator-=1/60}}if(!document.hidden&&now-lastDraw>=(window.OFFICE_VISIBLE===false?200:1000/30)-1){render();lastDraw=now}if(now-lastUI>250){updateUI();lastUI=now}}catch(e){if(!error){error=e;console.error(e);toast('场景检查发现异常，请查看记录')}}requestAnimationFrame(frame)}
 world.path(world.spots[1].anchor,world.spots[9].anchor);syncReality(true);roster();sync();zoom(1);updateUI();requestAnimationFrame(frame);

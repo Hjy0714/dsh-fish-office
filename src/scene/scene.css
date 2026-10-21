@@ -11,13 +11,11 @@ button:focus-visible,canvas:focus-visible,input:focus-visible{outline:2px solid 
 button:disabled{opacity:.5;cursor:default}
 main{display:flex;flex-direction:column;max-width:640px;margin:0 auto;padding:0 8px 24px;gap:16px}
 .stage-panel{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 10px 32px #03091155}
-.stage-top{display:flex;align-items:center;justify-content:flex-end;padding:7px 12px;background:var(--paper);border-bottom:1px solid var(--line)}
-.stage-top>div{display:flex;align-items:center;gap:8px}
-.stage-top button{padding:3px 8px;font-size:12px;width:27px;height:25px}
-.stage-top output{font:10px monospace;min-width:32px;text-align:center;color:var(--muted)}
 .viewport{width:100%;overflow:auto;scrollbar-width:thin;scrollbar-color:#455a67 transparent}
 .canvas-wrap{width:100%;position:relative;margin:auto}
 canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:pointer;touch-action:pan-y}
+canvas.zoomed{cursor:grab;user-select:none}
+canvas.panning{cursor:grabbing}
 aside{display:flex;flex-direction:column;width:100%;gap:14px}
 aside>section{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:16px;box-shadow:0 6px 18px #07101b33}
 .heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 0 13px;margin-bottom:11px;border-bottom:1px solid var(--line)}
